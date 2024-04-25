@@ -1,0 +1,82 @@
+
+import java.util.*;
+import java.io.*;
+
+public class PatternFor {
+    public static final String GREEN = "🟩";
+    public static final String YELLOW = "🟨";
+    public static final String GRAY = "⬜";
+
+    public static void main(String[] args) {
+        System.out.println(patternFor("abbey", "bebop"));
+        System.out.println(patternFor("abbey", "ether"));
+        System.out.println(patternFor("abbey", "keeps"));
+        System.out.println(patternFor("bebop", "abbey"));
+    }
+
+    // This method generates the pattern for a given guess word and target word.
+    // Parameters:
+    // - word: The target word to match.
+    // - guess: The guess word.
+    // Returns:
+    // - String: The pattern representing the matches between the guess and target word.
+    public static String patternFor(String word, String guess) {
+        // Create a list of the characters in the guess word.
+        List<String> guessList = new ArrayList<>();
+        for (int i = 0; i < guess.length(); i++) {
+            // Get the letter at the current index of the guess word.
+            String letter = guess.substring(i, i + 1);
+            // Add the letter to the list of characters in the guess word.
+            guessList.add(letter);
+        }
+        // Create a new HashMap to store the character count
+        Map<String, Integer> character = new HashMap<>();
+        for (int i = 0; i < word.length(); i++) {
+            String letter = word.charAt(i) + "";
+            if (!character.containsKey(letter)) {
+                character.put(letter, 1);
+            } else {
+                character.put(letter, character.get(letter) + 1);
+            }
+        }
+        // Create a new list to hold the pattern
+        List<String> pattern = new ArrayList<>();
+        // Mark all exact matches
+        for (int i = 0; i < word.length(); i++) {
+            // Get the letter at the current index for the guess and word
+            String guessLetter = guess.substring(i, i + 1);
+            String wordLetter = word.substring(i, i + 1);
+            // Check if the letter is the exact match
+            if (guessLetter.equals(wordLetter)) {
+                // Update the guessList and pattern with the green square
+                guessList.set(i, GREEN);
+                pattern.add(GREEN);
+                // Update character map to show that the letter has been used
+                character.put(guessLetter, character.get(guessLetter) - 1);
+            }
+        }
+        // Mark all approximate matches
+        for (int i = 0; i < guess.length(); i++) {
+            String guessLetter = guessList.get(i);
+            if (character.containsKey(guessLetter) && character.get(guessLetter) > 0) {
+                guessList.set(i, YELLOW);
+                character.put(guessLetter, character.get(guessLetter) - 1);
+            }
+        }
+        // Mark all unused characters as gray
+        for (int i = 0; i < word.length(); i++) {
+            String guessLetter = guessList.get(i);
+            String wordLetter = word.substring(i, i + 1);
+            if (!guessLetter.equals(GREEN) && !guessLetter.equals(YELLOW)) {
+                guessList.set(i, GRAY);
+            }
+        }
+        // Concentate the elements of pattern into a String to be returned.
+        String result = "";
+        for (String letter : guessList) {
+            result += letter;
+        }
+        return result;
+
+    }
+}
